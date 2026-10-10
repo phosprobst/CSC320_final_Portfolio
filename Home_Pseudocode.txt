@@ -1,0 +1,254 @@
+## Home Class Pseudocode
+
+CLASS Home
+
+    PRIVATE square_feet AS INTEGER
+    PRIVATE address AS STRING
+    PRIVATE city AS STRING
+    PRIVATE state AS STRING
+    PRIVATE zip_code AS INTEGER
+    PRIVATE Model_name AS STRING
+    PRIVATE sale_status AS STRING
+    PRIVATE populated AS BOOLEAN, initially FALSE
+
+
+    CONSTRUCTOR Home(squareFeet, address, city, state,
+                     zipCode, modelName, saleStatus)
+
+        TRY
+            CALL addHome with the supplied values
+            STORE returned message
+
+            IF populated is FALSE
+                THROW error containing returned message
+            END IF
+
+        CATCH error
+            THROW construction failure with error details
+        END TRY
+
+    END CONSTRUCTOR
+
+
+    METHOD addHome(squareFeet, address, city, state,
+                   zipCode, modelName, saleStatus)
+
+        TRY
+            IF a home is already stored
+                THROW error requiring removal first
+            END IF
+
+            VALIDATE squareFeet is greater than zero
+            VALIDATE zipCode is between 0 and 99999
+            VALIDATE address, city, and modelName are not blank
+            VALIDATE state contains exactly two letters
+
+            REMOVE surrounding spaces from saleStatus
+            CONVERT saleStatus to lowercase
+
+            VALIDATE saleStatus is one of:
+                "sold"
+                "available"
+                "under contract"
+
+            IF any validation fails
+                THROW invalid home information error
+            END IF
+
+            STORE all validated values in the private attributes
+            TRIM surrounding spaces from text values
+            CONVERT state to uppercase
+            SET populated to TRUE
+
+            RETURN "Home added successfully."
+
+        CATCH error
+            RETURN "Home addition failed: " plus error details
+        END TRY
+
+    END METHOD
+
+
+    METHOD removeHome()
+
+        TRY
+            IF no home is stored
+                THROW "No home is stored."
+            END IF
+
+            SET square_feet and zip_code to zero
+            SET all text attributes to empty strings
+            SET populated to FALSE
+
+            RETURN "Home removed successfully."
+
+        CATCH error
+            RETURN "Home removal failed: " plus error details
+        END TRY
+
+    END METHOD
+
+
+    METHOD updateHome(newSaleStatus)
+
+        TRY
+            IF no home is stored
+                THROW "No home is stored."
+            END IF
+
+            TRIM newSaleStatus and convert it to lowercase
+
+            IF newSaleStatus is not "sold", "available",
+               or "under contract"
+                THROW invalid sale status error
+            END IF
+
+            SET sale_status to newSaleStatus
+
+            RETURN "Home updated successfully."
+
+        CATCH error
+            RETURN "Home update failed: " plus error details
+        END TRY
+
+    END METHOD
+
+
+    METHOD listHome()
+
+        TRY
+            IF no home is stored
+                THROW "No home is stored."
+            END IF
+
+            CREATE an array containing labeled values for:
+                Square feet
+                Address
+                City
+                State
+                ZIP code formatted with five digits
+                Model name
+                Sale status
+
+            RETURN the array
+
+        CATCH error
+            RETURN a one-element array containing:
+                "Home listing failed: " plus error details
+        END TRY
+
+    END METHOD
+
+END CLASS
+```
+
+## HomeInventory Class Pseudocode
+
+```text
+CLASS HomeInventory
+
+    METHOD main()
+
+        TRY WITH Scanner connected to keyboard input
+
+            CREATE home using the parameterized constructor:
+                Square feet = 1800
+                Address = "125 Aspen Lane"
+                City = "Denver"
+                State = "CO"
+                ZIP code = 80202
+                Model name = "Aspen"
+                Sale status = "available"
+
+            DISPLAY "Home constructed successfully."
+
+            CALL home.listHome()
+            LOOP through the returned array
+                DISPLAY each value
+            END LOOP
+
+
+            CALL home.removeHome()
+            DISPLAY the returned message
+
+
+            CALL home.addHome() with:
+                Square feet = 2400
+                Address = "48 Maple Drive"
+                City = "Boston"
+                State = "MA"
+                ZIP code = 2108
+                Model name = "Maple"
+                Sale status = "available"
+
+            DISPLAY the returned message
+
+            CALL home.listHome()
+            LOOP through the returned array
+                DISPLAY each value
+            END LOOP
+
+
+            CALL home.updateHome("under contract")
+            DISPLAY the returned message
+
+            CALL home.listHome()
+            LOOP through the returned array
+                DISPLAY each value
+            END LOOP
+
+
+            REPEAT
+                ASK "Print home information to a file (Y or N)?"
+                READ response using Scanner
+                REMOVE surrounding spaces
+
+                IF response is neither Y nor N,
+                   ignoring capitalization
+                    DISPLAY "Please enter Y or N."
+                END IF
+            UNTIL response is Y or N
+
+
+            IF response is Y
+                CALL printToFile(home.listHome())
+                DISPLAY the returned message
+            ELSE
+                DISPLAY "A file will not be printed."
+            END IF
+
+        CATCH error
+            DISPLAY "Home inventory failed: " plus error details
+        END TRY
+
+        CLOSE Scanner automatically
+
+    END METHOD
+
+
+    METHOD printToFile(values)
+
+        TRY
+            IF values is missing or does not contain seven entries
+                THROW incomplete home record error
+            END IF
+
+            SET destination to "output/Home.txt"
+                beneath the working directory
+
+            CREATE the output directory if necessary
+
+            WRITE each array entry to the file using UTF-8
+            REPLACE existing file contents if the file exists
+
+            RETURN "File written successfully to "
+                   plus the full destination path
+
+        CATCH error
+            RETURN "File output failed: " plus error details
+        END TRY
+
+    END METHOD
+
+END CLASS
+```
